@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+
 from pathlib import Path
+import dj_database_url
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,7 +86,10 @@ DATABASES = {
         'PASSWORD': '3073466Yenglik!',
         'HOST': 'localhost',
         'PORT': '5432'
-    }
+    },
+    'default': dj_database_url.parse(
+        os.environ.get("postgresql://postgres:lDftTFfnuzLBhqBCjrpLftmIDXdxwwdW@postgres.railway.internal:5432/railway")
+    )
 }
 
 
