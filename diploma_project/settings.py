@@ -79,16 +79,8 @@ WSGI_APPLICATION = 'diploma_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'LoginRegisterLogout',
-        'USER':'postgres',
-        'PASSWORD': '3073466Yenglik!',
-        'HOST': 'localhost',
-        'PORT': '5432'
-    },
-    'default': dj_database_url.parse(
-        os.environ.get("postgresql://postgres:lDftTFfnuzLBhqBCjrpLftmIDXdxwwdW@postgres.railway.internal:5432/railway")
+    'default': dj_database_url.config(
+        default=os.environ.get("DATABASE_URL")
     )
 }
 
