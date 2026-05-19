@@ -1,0 +1,380 @@
+{% extends "users/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class='scan_bg'></div>
+<div class='grid'></div>
+<div class="corner c-tl"></div>
+<div class="corner c-tr"></div>
+<div class="corner c-bl"></div>
+<div class="corner c-br"></div>
+
+<header>
+    <h1 class="logo">Find Ai</h1>
+    <nav>
+        <ul class="nav_links">
+            <li><a href="{% url 'detect_ai' %}">Детектор</a></li>
+            <li><a href="{% url 'history' %}" class="active">История</a></li>
+        </ul>
+    </nav>
+
+    <div class="user-info">
+        <span class="username">{{ request.user.username }}</span>
+        <a href="{% url 'logout' %}"><button class="logout-btn">Выйти</button></a>
+    </div>
+</header>
+
+<section class="history-page">
+    <div class="history-header">
+        <h1>История анализов</h1>
+        <p>Все предыдущие проверки текста, сохранённые в вашем профиле</p>
+    </div>
+
+    <div class="history-list">
+    {% for item in analyses %}
+    <div class="history-card">
+        <div class="history-top">
+            <div>
+                <p class="history-date">{{ item.created_at|date:"d.m.Y H:i" }}</p>
+                <h3 class="history-verdict {% if item.verdict == 'AI' %}ai-text{% else %}human-text{% endif %}">
+                    {{ item.verdict }}
+                </h3>
+            </div>
+
+            <div class="history-score">
+                {{ item.ai_percent }}%
+                <span>AI</span>
+            </div>
+        </div>
+
+        <div class="mini-bar">
+            <div
+                class="mini-fill {% if item.verdict == 'AI' %}mini-fill-ai{% else %}mini-fill-human{% endif %}"
+                style="width: {{ item.ai_percent }}%;">
+            </div>
+        </div>
+
+        <div class="history-meta">
+            <span>Human: {{ item.human_percent }}%</span>
+            <span>Stat: {{ item.statistical_score|floatformat:2 }}</span>
+            <span>ML: {{ item.ml_probability|floatformat:2 }}</span>
+        </div>
+
+        <div class="history-text">
+            {{ item.text|truncatechars:260 }}
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-history">
+        У вас пока нет сохранённых анализов.
+    </div>
+    {% endfor %}
+
+    {% for item in media_analyses %}
+    <div class="history-card">
+        <div class="history-top">
+            <div>
+                <p class="history-date">
+                    {{ item.created_at|date:"d.m.Y H:i" }} —
+                    {% if item.media_type == 'audio' %}🎙️ Аудио{% else %}🖼️ Изображение{% endif %}
+                </p>
+                <h3 class="history-verdict {% if item.label == 'ai_generated' %}ai-text{% else %}human-text{% endif %}">
+                    {% if item.label == 'ai_generated' %}ИИ-контент{% else %}Человек{% endif %}
+                </h3>
+            </div>
+            <div class="history-score">
+                {{ item.confidence_percent }}%
+                <span>уверенность</span>
+            </div>
+        </div>
+
+        <div class="mini-bar">
+            <div class="mini-fill {% if item.label == 'ai_generated' %}mini-fill-ai{% else %}mini-fill-human{% endif %}">
+                
+
+            </div>
+        </div>
+
+        <div class="history-meta">
+            <span>Файл: {{ item.filename }}</span>
+            <span>Тип: {% if item.media_type == 'audio' %}Аудио{% else %}Изображение{% endif %}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</section>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&display=swap');
+
+    @font-face {
+        font-family: 'Visitor tt1 brk';
+        src: url("{% static 'visitortt1brk.ttf' %}");
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: black;
+        position: relative;
+        min-height: 100vh;
+        overflow-x: hidden;
+        font-family: 'Exo 2', sans-serif;
+    }
+
+    .scan_bg {
+        position: fixed;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: rgba(163, 230, 53, 0.9);
+        box-shadow: 0 0 8px rgba(163,230,53,0.8), 0 0 30px rgba(163,230,53,0.3);
+        animation: move 3s linear infinite;
+        z-index: 0;
+    }
+
+    @keyframes move {
+        0% { top: 0; }
+        100% { top: 100%; }
+    }
+
+    .grid {
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px);
+        background-size: 50px 50px;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .corner {
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        z-index: 10;
+        opacity: 0.4;
+    }
+
+    .corner::before, .corner::after {
+        content: '';
+        position: absolute;
+        background: #a3e635;
+    }
+
+    .c-tl { top: 16px; left: 16px; }
+    .c-tl::before { top:0; left:0; width:100%; height:2px; }
+    .c-tl::after { top:0; left:0; width:2px; height:100%; }
+
+    .c-tr { top: 16px; right: 16px; }
+    .c-tr::before { top:0; right:0; width:100%; height:2px; }
+    .c-tr::after { top:0; right:0; width:2px; height:100%; }
+
+    .c-bl { bottom: 16px; left: 16px; }
+    .c-bl::before { bottom:0; left:0; width:100%; height:2px; }
+    .c-bl::after { bottom:0; left:0; width:2px; height:100%; }
+
+    .c-br { bottom: 16px; right: 16px; }
+    .c-br::before { bottom:0; right:0; width:100%; height:2px; }
+    .c-br::after { bottom:0; right:0; width:2px; height:100%; }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 10%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .logo {
+        font-family: 'Visitor tt1 brk';
+        color: #9B5CF6;
+        font-size: 45px;
+    }
+
+    .nav_links {
+        list-style: none;
+        display: flex;
+        gap: 30px;
+    }
+
+    .nav_links li a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        transition: color 0.3s;
+    }
+
+    .nav_links li a:hover,
+    .nav_links li a.active {
+        color: #9B5CF6;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .username {
+        color: #9B5CF6;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .logout-btn {
+        padding: 8px 18px;
+        background: transparent;
+        border: 1px solid #9B5CF6;
+        border-radius: 10px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+        background: rgba(155,92,246,0.25);
+    }
+
+    .history-page {
+        position: relative;
+        z-index: 1;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+        color: white;
+    }
+
+    .history-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .history-header h1 {
+        font-size: 38px;
+        margin-bottom: 8px;
+    }
+
+    .history-header p {
+        color: rgba(255,255,255,0.45);
+    }
+
+    .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .history-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(155,92,246,0.2);
+        border-radius: 18px;
+        padding: 20px;
+        backdrop-filter: blur(4px);
+    }
+
+    .history-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        gap: 20px;
+    }
+
+    .history-date {
+        color: rgba(255,255,255,0.4);
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .history-verdict {
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .ai-text {
+        color: #ff7a7a;
+    }
+
+    .human-text {
+        color: #C3F55B;
+    }
+
+    .history-score {
+        font-size: 28px;
+        font-weight: 800;
+        color: white;
+    }
+
+    .history-score span {
+        font-size: 13px;
+        color: rgba(255,255,255,0.4);
+        margin-left: 4px;
+    }
+
+    .mini-bar {
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.08);
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    .mini-fill {
+        height: 100%;
+        border-radius: 999px;
+    }
+
+    .mini-fill-ai {
+        background: linear-gradient(90deg, #9B5CF6, #ff7a7a);
+    }
+
+    .mini-fill-human {
+        background: linear-gradient(90deg, #9B5CF6, #C3F55B);
+    }
+
+    .history-meta {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: rgba(255,255,255,0.55);
+        margin-bottom: 14px;
+    }
+
+    .history-text {
+        color: rgba(255,255,255,0.8);
+        line-height: 1.6;
+    }
+
+    .empty-history {
+        text-align: center;
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid rgba(155,92,246,0.2);
+        background: rgba(255,255,255,0.03);
+        color: rgba(255,255,255,0.6);
+    }
+
+    @media (max-width: 768px) {
+        header {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .history-top {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+{% endblock %}

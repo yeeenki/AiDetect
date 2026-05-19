@@ -1,0 +1,362 @@
+{% extends "users/base.html" %}
+
+{% block content %}
+
+<div class='scan_bg'></div>
+<div class='grid'></div>
+<div class="corner c-tl"></div>
+<div class="corner c-tr"></div>
+<div class="corner c-bl"></div>
+<div class="corner c-br"></div>
+
+<header>
+    <h1 class="logo">Find Ai</h1>
+    <nav>
+        <ul class="nav_links">
+            <li><a href="#">О нас</a></li>
+            <li><a href="#">Детектор</a></li>
+            <li><a href="#">PRO ver.</a></li>
+            <li><a href="#">Связаться</a></li>
+        </ul>
+    </nav>
+</header>
+
+<section class="detect-section">
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab(this, 'text')">Текст</button>
+        <button class="tab" onclick="switchTab(this, 'media')">Медиа</button>
+        <button class="tab" onclick="switchTab(this, 'audio')">Аудио</button>
+    </div>
+
+    <div class="tab-content" id="tab-text">
+        <div class="detect-box">
+            <textarea placeholder="Ваш текст..."></textarea>
+
+            {% if not request.user.is_authenticated %}
+            <div class="auth-overlay">
+                <p>Войдите в аккаунт<br>чтобы продолжить</p>
+                <a href="{% url 'login' %}"><button class="auth-btn">Вход</button></a>
+                <a href="{% url 'register' %}" class="auth-link">Нету аккаунта? Зарегистрироваться</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if request.user.is_authenticated %}
+        <button class="analyze-btn">Анализировать</button>
+        {% endif %}
+    </div>
+
+    <div class="tab-content hidden" id="tab-media">
+        <div class="detect-box">
+            <div class="upload-area">
+                <p>Перетащите файл или <span>выберите</span></p>
+            </div>
+
+            {% if not request.user.is_authenticated %}
+            <div class="auth-overlay">
+                <p>Войдите в аккаунт<br>чтобы продолжить</p>
+                <a href="{% url 'login' %}"><button class="auth-btn">Вход</button></a>
+                <a href="{% url 'register' %}" class="auth-link">Нету аккаунта? Зарегистрироваться</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if request.user.is_authenticated %}
+        <button class="analyze-btn">Анализировать</button>
+        {% endif %}
+    </div>
+
+    <div class="tab-content hidden" id="tab-audio">
+        <div class="detect-box">
+            <div class="upload-area">
+                <p>Перетащите аудио или <span>выберите</span></p>
+            </div>
+
+            {% if not request.user.is_authenticated %}
+            <div class="auth-overlay">
+                <p>Войдите в аккаунт<br>чтобы продолжить</p>
+                <a href="{% url 'login' %}"><button class="auth-btn">Вход</button></a>
+                <a href="{% url 'register' %}" class="auth-link">Нету аккаунта? Зарегистрироваться</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if request.user.is_authenticated %}
+        <button class="analyze-btn">Анализировать</button>
+        {% endif %}
+    </div>
+
+</section>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2&display=swap');
+
+    @font-face {
+        font-family: 'Visitor tt1 brk';
+        src: url(visitortt1brk.ttf);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: black;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Exo 2', sans-serif;
+    }
+
+    .scan_bg {
+        position: fixed;
+        left: 0; right: 0;
+        height: 1px;
+        background: rgba(163, 230, 53, 0.9);
+        box-shadow: 0 0 8px rgba(163,230,53,0.8), 0 0 30px rgba(163,230,53,0.3);
+        animation: move 3s linear infinite;
+        z-index: 0;
+    }
+    @keyframes move {
+        0%   { top: 0; }
+        100% { top: 100%; }
+    }
+
+    .grid {
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px);
+        background-size: 50px 50px;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .corner {
+        position: fixed;
+        width: 20px; height: 20px;
+        z-index: 10;
+        opacity: 0.4;
+    }
+    .corner::before, .corner::after {
+        content: '';
+        position: absolute;
+        background: #a3e635;
+    }
+    .c-tl { top: 16px; left: 16px; }
+    .c-tl::before { top:0; left:0; width:100%; height:2px; }
+    .c-tl::after  { top:0; left:0; width:2px; height:100%; }
+    .c-tr { top: 16px; right: 16px; }
+    .c-tr::before { top:0; right:0; width:100%; height:2px; }
+    .c-tr::after  { top:0; right:0; width:2px; height:100%; }
+    .c-bl { bottom: 16px; left: 16px; }
+    .c-bl::before { bottom:0; left:0; width:100%; height:2px; }
+    .c-bl::after  { bottom:0; left:0; width:2px; height:100%; }
+    .c-br { bottom: 16px; right: 16px; }
+    .c-br::before { bottom:0; right:0; width:100%; height:2px; }
+    .c-br::after  { bottom:0; right:0; width:2px; height:100%; }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 10%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .logo {
+        font-family: 'Visitor tt1 brk';
+        color: #9B5CF6;
+        font-size: 45px;
+        cursor: pointer;
+    }
+
+    .nav_links {
+        list-style: none;
+        display: flex;
+        gap: 30px;
+    }
+
+    .nav_links li a {
+        font-family: 'Exo 2', sans-serif;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        transition: color 0.3s;
+    }
+
+    .nav_links li a:hover {
+        color: #9B5CF6;
+    }
+
+    .detect-section {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 30px;
+        gap: 20px;
+    }
+
+    .tabs {
+        display: flex;
+        border: 1px solid #9B5CF6;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .tab {
+        padding: 10px 40px;
+        background: transparent;
+        border: none;
+        border-right: 1px solid #9B5CF6;
+        color: white;
+        font-family: 'Exo 2', sans-serif;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .tab:last-child {
+        border-right: none;
+    }
+
+    .tab.active,
+    .tab:hover {
+        background: rgba(155, 92, 246, 0.3);
+    }
+
+    .tab-content {
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .tab-content.hidden {
+        display: none;
+    }
+
+    .detect-box {
+        width: 100%;
+        min-height: 220px;
+        background: #0a0a0a;
+        border: 1px solid rgba(155, 92, 246, 0.4);
+        border-radius: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    textarea {
+        width: 100%;
+        height: 220px;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: rgba(255,255,255,0.5);
+        font-family: 'Exo 2', sans-serif;
+        font-size: 15px;
+        padding: 20px;
+        resize: none;
+    }
+
+    .upload-area {
+        width: 100%;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,255,255,0.4);
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .upload-area span {
+        color: #9B5CF6;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .auth-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(4px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .auth-overlay p {
+        color: white;
+        font-size: 20px;
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.4;
+    }
+
+    .auth-btn {
+        background: #9B5CF6;
+        border: none;
+        border-radius: 20px;
+        color: white;
+        font-family: 'Exo 2', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 10px 35px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .auth-btn:hover {
+        background: rgba(155, 92, 246, 0.7);
+    }
+
+    .auth-link {
+        color: rgba(255,255,255,0.5);
+        font-size: 13px;
+        text-decoration: underline;
+        text-decoration-color: rgba(255,255,255,0.3);
+    }
+
+    .auth-link:hover {
+        color: #9B5CF6;
+    }
+
+    .analyze-btn {
+        background: #9B5CF6;
+        border: none;
+        border-radius: 20px;
+        color: white;
+        font-family: 'Exo 2', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        padding: 12px 50px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: background 0.3s;
+    }
+
+    .analyze-btn:hover {
+        background: rgba(155, 92, 246, 0.7);
+    }
+</style>
+
+<script>
+    function switchTab(el, tabId) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        el.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.remove('hidden');
+    }
+</script>
+
+{% endblock content %}

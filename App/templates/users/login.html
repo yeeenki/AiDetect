@@ -1,0 +1,177 @@
+{% extends "users/base.html" %}
+
+{% block content %}
+
+<!-- Фон -->
+<div class='scan_bg'></div>
+<div class='grid'></div>
+<div class="corner c-tl"></div>
+<div class="corner c-tr"></div>
+<div class="corner c-bl"></div>
+<div class="corner c-br"></div>
+
+<div class='login-container'>
+    <div class='login_card'>
+        <h1>Войти</h1>
+        {% if error %}
+            <p style="color: #ff4d4d; text-align: center; margin-bottom: 10px;">{{ error }}</p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <input type='text' placeholder='Имя пользователя / E-mail' name='username' required> <br/>
+            <input type='password' placeholder='Пароль' name='password' required> <br/>
+            <button type="submit">Войти</button>
+            <p>Нету аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+        </form>
+    </div>
+</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2&family=Poppins:wght@300;400;500;600&display=swap');
+
+    @font-face {
+        font-family: 'Visitor tt1 brk';
+        src: url(visitortt1brk.ttf);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: black;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Exo 2', sans-serif;
+    }
+
+    .scan_bg {
+        position: fixed;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: rgba(163, 230, 53, 0.9);
+        box-shadow: 0 0 8px rgba(163,230,53,0.8), 0 0 30px rgba(163,230,53,0.3);
+        animation: move 3s linear infinite;
+        z-index: 1;
+    }
+
+    @keyframes move {
+        0%   { top: 80px; }
+        100% { top: 100%; }
+    }
+
+    .grid {
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px);
+        background-size: 50px 50px;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .corner {
+        position: fixed;
+        width: 20px; height: 20px;
+        z-index: 10;
+        opacity: 0.4;
+    }
+    .corner::before, .corner::after {
+        content: '';
+        position: absolute;
+        background: #a3e635;
+    }
+    .c-tl { top: 16px; left: 16px; }
+    .c-tl::before { top:0; left:0; width:100%; height:2px; }
+    .c-tl::after  { top:0; left:0; width:2px; height:100%; }
+
+    .c-tr { top: 16px; right: 16px; }
+    .c-tr::before { top:0; right:0; width:100%; height:2px; }
+    .c-tr::after  { top:0; right:0; width:2px; height:100%; }
+
+    .c-bl { bottom: 16px; left: 16px; }
+    .c-bl::before { bottom:0; left:0; width:100%; height:2px; }
+    .c-bl::after  { bottom:0; left:0; width:2px; height:100%; }
+
+    .c-br { bottom: 16px; right: 16px; }
+    .c-br::before { bottom:0; right:0; width:100%; height:2px; }
+    .c-br::after  { bottom:0; right:0; width:2px; height:100%; }
+
+    .login-container {
+        position: relative;
+        z-index: 1;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .login_card {
+        background-color: #000;
+        border: 1px solid #9B5CF6;
+        border-radius: 20px;
+        padding: 50px 60px;
+        box-shadow: 0 0 20px rgba(155, 92, 246, 0.4),
+                    0 0 60px rgba(155, 92, 246, 0.15),
+                    inset 0 0 30px rgba(155, 92, 246, 0.05);
+        z-index: 1;
+    }
+    h1 {
+        color: white;
+        font-size: 70px;
+        margin-bottom: 30px;
+        font-weight: 900;
+    }
+
+    input {
+        width: 350px;
+        padding: 12px 20px;
+        background: transparent;
+        border: 1px solid #9B5CF6;
+        border-radius: 30px;
+        color: white;
+        font-size: 16px;
+        outline: none;
+        margin-bottom: 15px;
+    }
+
+    input:focus {
+        border-color: #9B5CF6;
+        box-shadow: 0 0 10px rgba(155, 92, 246, 0.4);
+    }
+
+    button {
+        background: #9B5CF6;
+        border: none;
+        border-radius: 25px;
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+        padding: 20px 30px;
+        margin-left: 110px;
+        margin-right: 110px;
+        width: 130px;
+    }
+
+    button:hover {
+        background: rgba(155, 92, 246, 0.8);
+    }
+
+    p {
+        color: white;
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    a {
+        color: #9B5CF6;
+    }
+</style>
+
+{% endblock content %}
