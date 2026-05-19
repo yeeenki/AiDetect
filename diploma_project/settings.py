@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ta*ed&n$tqp*gn+x=59!a0=b9o$3s!dcy1jqvrd)!)$f@epgj1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "https://aidetect-production.up.railway.app/",
