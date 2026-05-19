@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     "https://aidetect-production.up.railway.app/",
     "localhost",
     "127.0.0.1",
+    ".railway.app",
 ]
 
 
