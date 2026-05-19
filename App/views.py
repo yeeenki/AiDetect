@@ -18,9 +18,9 @@ from .models import DetectionResult, MediaDetectionResult
 
 
 
-model = joblib.load("app/ml/model.pkl")
-tfidf = joblib.load("app/ml/tfidf.pkl")
-feat_cols = joblib.load("app/ml/feat_cols.pkl")
+model = joblib.load("App/ml/model.pkl")
+tfidf = joblib.load("App/ml/tfidf.pkl")
+feat_cols = joblib.load("App/ml/feat_cols.pkl")
 
 def register(request):
     if request.method == 'POST':
