@@ -35,6 +35,10 @@ ALLOWED_HOSTS = [
     ".railway.app",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://aidetect-production.up.railway.app",
+]
+
 
 # Application definition
 
