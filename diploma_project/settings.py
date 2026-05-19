@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'diploma_project.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get("postgresql://postgres:lDftTFfnuzLBhqBCjrpLftmIDXdxwwdW@postgres.railway.internal:5432/railway")
+        default=os.environ.get("Postgres.postgresql://postgres:lDftTFfnuzLBhqBCjrpLftmIDXdxwwdW@postgres.railway.internal:5432/railway")
     )
 }
 
