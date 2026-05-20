@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'diploma_project.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get("DATABASE_URL")
+        default=os.environ.get("postgresql://postgres:lDftTFfnuzLBhqBCjrpLftmIDXdxwwdW@metro.proxy.rlwy.net:24561/railway")
     )
 }
 
