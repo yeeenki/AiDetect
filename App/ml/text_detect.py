@@ -1,17 +1,3 @@
-"""
-╔══════════════════════════════════════════════════════╗
-║   ДЕТЕКТОР ИИ-ТЕКСТА — Дипломная работа              ║
-║   Методы: Статистический + ML модель (TF-IDF + LR)   ║
-║   Данные: JSON с колонками 'text' и 'source'          ║
-╚══════════════════════════════════════════════════════╝
-
-Установка зависимостей:
-    pip install scikit-learn pandas numpy matplotlib seaborn
-
-Запуск:
-    python ai_text_detector.py --data dataset.json
-    python ai_text_detector.py --data dataset.json --predict "Введи текст здесь"
-"""
 
 import json
 import re
@@ -35,25 +21,14 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import seaborn as sns
+from scipy.sparse import hstack, csr_matrix
 
 
-# ══════════════════════════════════════════════════════
-# ШАГ 1: ЗАГРУЗКА ДАННЫХ
-# ══════════════════════════════════════════════════════
 
 def load_dataset(path: str) -> pd.DataFrame:
-    """
-    Загружает JSON датасет.
-    Поддерживает два формата:
-      - Массив объектов: [{"text": ..., "source": ...}, ...]
-      - Построчный JSON (JSONL): каждая строка — отдельный объект
-    """
     print(f"\n[1/5] Загружаем датасет: {path}")
-
     with open(path, "r", encoding="utf-8") as f:
         content = f.read().strip()
-
-    # Пробуем как обычный JSON массив
     try:
         data = json.loads(content)
         if isinstance(data, list):
@@ -63,29 +38,23 @@ def load_dataset(path: str) -> pd.DataFrame:
         else:
             raise ValueError("Неизвестный формат")
     except json.JSONDecodeError:
-        # Пробуем как JSONL (одна запись на строку)
         records = []
         for line in content.splitlines():
             line = line.strip()
             if line:
                 records.append(json.loads(line))
         df = pd.DataFrame(records)
-
-    # Проверяем нужные колонки
     if "text" not in df.columns or "source" not in df.columns:
         print(f"  Колонки в файле: {list(df.columns)}")
         raise ValueError("Нужны колонки 'text' и 'source'. Проверь файл.")
-
     # Нормализуем метки: AI→1, HUMAN→0
     df["source"] = df["source"].str.upper().str.strip()
     df["label"] = df["source"].map({"AI": 1, "HUMAN": 0})
     df = df.dropna(subset=["label", "text"])
     df["label"] = df["label"].astype(int)
-
     print(f"  ✓ Загружено записей: {len(df)}")
     print(f"  ✓ AI-текстов:        {(df['label'] == 1).sum()}")
     print(f"  ✓ Человеческих:      {(df['label'] == 0).sum()}")
-
     return df
 
 
@@ -94,10 +63,6 @@ def load_dataset(path: str) -> pd.DataFrame:
 # ══════════════════════════════════════════════════════
 
 def extract_statistical_features(text: str) -> dict:
-    """
-    Извлекает статистические признаки одного текста.
-    Эти признаки затем используются и для анализа, и для ML-модели.
-    """
     if not isinstance(text, str) or len(text.strip()) == 0:
         return {k: 0 for k in [
             "word_count", "sentence_count", "avg_sentence_len",
@@ -105,31 +70,25 @@ def extract_statistical_features(text: str) -> dict:
             "type_token_ratio", "avg_word_length",
             "comma_rate", "ai_phrase_score", "punct_diversity"
         ]}
-
     # --- Слова и предложения ---
     words = re.findall(r'\b\w+\b', text.lower())
     sentences = re.split(r'[.!?]+', text)
     sentences = [s.strip() for s in sentences if len(s.strip()) > 3]
-
     word_count = len(words)
     sentence_count = max(len(sentences), 1)
-
     sent_lengths = [len(re.findall(r'\b\w+\b', s)) for s in sentences]
     avg_len = np.mean(sent_lengths) if sent_lengths else 0
     variance = np.var(sent_lengths) if len(sent_lengths) > 1 else 0
     # Равномерность: чем меньше дисперсия относительно среднего — тем "роботнее"
     uniformity = max(0, 1 - (variance / (avg_len ** 2 + 1e-6)))
-
     # --- Словарное богатство ---
     unique_words = set(words)
     ttr = len(unique_words) / (word_count + 1e-6)
     avg_word_len = np.mean([len(w) for w in words]) if words else 0
-
     # --- Пунктуация ---
     comma_rate = text.count(",") / (word_count + 1e-6)
     punct_chars = set(re.findall(r'[^\w\s]', text))
     punct_diversity = len(punct_chars)
-
     # --- ИИ-фразы (расширенный список) ---
     ai_patterns = [
         "таким образом", "следует отметить", "важно подчеркнуть",
@@ -416,11 +375,6 @@ def plot_results(df: pd.DataFrame, feat_df: pd.DataFrame, eval_results: dict):
 # ══════════════════════════════════════════════════════
 
 def predict_text(text: str, model, tfidf, feat_columns: list) -> dict:
-    """
-    Финальный вывод: статистика + ML → итоговый вердикт.
-    """
-    from scipy.sparse import hstack, csr_matrix
-
     # --- Статистический анализ ---
     stat_feats = extract_statistical_features(text)
     stat_score = (

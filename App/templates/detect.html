@@ -126,66 +126,14 @@
     </div>
 
     <!-- MEDIA TAB -->
-    <!-- MEDIA TAB -->
-<div class="tab-content hidden" id="tab-media">
-    <div class="detect-box">
-        <div class="upload-area">
-            <p style="color:rgba(255,255,255,0.4); margin-bottom:12px;">🖼️ Загрузите изображение для проверки</p>
-            <p style="color:rgba(255,255,255,0.25); font-size:13px;">Поддерживается: .jpg, .jpeg, .png, .webp</p>
-            <input type="file" id="mediaFile" accept=".jpg,.jpeg,.png,.webp"
-                style="margin-top:16px; color:rgba(255,255,255,0.6);">
-        </div>
-
-        {% if not request.user.is_authenticated %}
-        <div class="auth-overlay">
-            <p>Войдите в аккаунт<br>чтобы продолжить</p>
-            <a href="{% url 'login' %}?next={{ request.path }}">
-                <button type="button" class="auth-btn">Вход</button>
-            </a>
-            <a href="{% url 'register' %}" class="auth-link">Нету аккаунта? Зарегистрироваться</a>
-        </div>
-        {% endif %}
-    </div>
-
-    {% if request.user.is_authenticated %}
-    <div class="actions">
-        <button class="analyze-btn" onclick="checkMedia()">Анализировать</button>
-    </div>
-    {% endif %}
-
-    <div id="media-loader" style="display:none; text-align:center; padding:10px 0;">
-        <div class="spinner"></div>
-        <p class="loader-txt">Анализируем изображение...</p>
-    </div>
-
-    <div id="media-result" class="result-block hidden">
-        <div class="result-header">
-            <div>
-                <p class="result-label">Результат анализа</p>
-                <h3 id="media-result-title">—</h3>
+    <div class="tab-content hidden" id="tab-media">
+        <div class="detect-box">
+            <div class="upload-area">
+                <p style="color:rgba(255,255,255,0.4); margin-bottom:12px;">🖼️ Загрузите изображение для проверки</p>
+                <p style="color:rgba(255,255,255,0.25); font-size:13px;">Поддерживается: .jpg, .jpeg, .png, .webp</p>
+                <input type="file" id="mediaFile" accept=".jpg,.jpeg,.png,.webp"
+                    style="margin-top:16px; color:rgba(255,255,255,0.6);">
             </div>
-            <div id="media-result-badge" class="result-badge">—</div>
-        </div>
-        <div class="confidence-wrap">
-            <div class="confidence-bar">
-                <div id="media-confidence-fill" class="confidence-fill"></div>
-            </div>
-            <p class="confidence-text">
-                Уверенность: <span id="media-confidence-percent">0%</span>
-            </p>
-        </div>
-        <div class="score-grid">
-            <div class="score-card">
-                <p class="score-title">AI probability</p>
-                <div class="score-value" id="media-ai-score">0%</div>
-            </div>
-            <div class="score-card">
-                <p class="score-title">Human probability</p>
-                <div class="score-value" id="media-human-score">0%</div>
-            </div>
-        </div>
-    </div>
-</div>  
 
             {% if not request.user.is_authenticated %}
             <div class="auth-overlay">
@@ -196,6 +144,45 @@
                 <a href="{% url 'register' %}" class="auth-link">Нету аккаунта? Зарегистрироваться</a>
             </div>
             {% endif %}
+        </div>
+
+        {% if request.user.is_authenticated %}
+        <div class="actions">
+            <button class="analyze-btn" onclick="checkMedia()">Анализировать</button>
+        </div>
+        {% endif %}
+
+        <div id="media-loader" style="display:none; text-align:center; padding:10px 0;">
+            <div class="spinner"></div>
+            <p class="loader-txt">Анализируем изображение...</p>
+        </div>
+
+        <div id="media-result" class="result-block hidden">
+            <div class="result-header">
+                <div>
+                    <p class="result-label">Результат анализа</p>
+                    <h3 id="media-result-title">—</h3>
+                </div>
+                <div id="media-result-badge" class="result-badge">—</div>
+            </div>
+            <div class="confidence-wrap">
+                <div class="confidence-bar">
+                    <div id="media-confidence-fill" class="confidence-fill"></div>
+                </div>
+                <p class="confidence-text">
+                    Уверенность: <span id="media-confidence-percent">0%</span>
+                </p>
+            </div>
+            <div class="score-grid">
+                <div class="score-card">
+                    <p class="score-title">AI probability</p>
+                    <div class="score-value" id="media-ai-score">0%</div>
+                </div>
+                <div class="score-card">
+                    <p class="score-title">Human probability</p>
+                    <div class="score-value" id="media-human-score">0%</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -387,16 +374,6 @@
         font-weight: 600;
     }
 
-    .profile-link {
-        color: rgba(255,255,255,0.75);
-        text-decoration: none;
-        font-size: 14px;
-    }
-
-    .profile-link:hover {
-        color: #C3F55B;
-    }
-
     .logout-btn, .login-btn {
         padding: 8px 18px;
         background: transparent;
@@ -419,7 +396,6 @@
         align-items: center;
         padding: 30px 20px 60px;
         gap: 20px;
-
     }
 
     .tabs {
@@ -470,8 +446,6 @@
         border-radius: 14px;
         position: relative;
         overflow: hidden;
-        max-width: 900px; 
-
     }
 
     textarea {
@@ -503,6 +477,7 @@
         width: 100%;
         min-height: 240px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         color: rgba(255,255,255,0.4);
@@ -1063,105 +1038,107 @@
         });
         return v;
     }
+
     async function checkAudio() {
-    const file = document.getElementById('audioFile').files[0];
-    const resultEl = document.getElementById('audio-result');
-    const loaderEl = document.getElementById('audio-loader');
+        const file = document.getElementById('audioFile').files[0];
+        const resultEl = document.getElementById('audio-result');
+        const loaderEl = document.getElementById('audio-loader');
 
-    if (!file) {
-        alert('Выбери аудиофайл!');
-        return;
+        if (!file) {
+            alert('Выбери аудиофайл!');
+            return;
+        }
+
+        loaderEl.style.display = 'block';
+        resultEl.classList.add('hidden');
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch("{% url 'detect_audio_api' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: formData
+            });
+
+            const data = await res.json();
+            const isAI = data.label === 'ai_generated';
+            const conf = Math.round(data.confidence * 100);
+            const humanPct = 100 - conf;
+
+            document.getElementById('audio-result-title').textContent = isAI
+                ? 'Аудио сгенерировано ИИ'
+                : 'Живой голос человека';
+
+            const badge = document.getElementById('audio-result-badge');
+            badge.textContent = isAI ? 'AI' : 'Human';
+            badge.className = 'result-badge ' + (isAI ? 'badge-ai' : 'badge-human');
+
+            document.getElementById('audio-confidence-percent').textContent = conf + '%';
+            const fill = document.getElementById('audio-confidence-fill');
+            fill.style.width = '0%';
+            setTimeout(() => { fill.style.width = conf + '%'; }, 50);
+
+            document.getElementById('audio-ai-score').textContent = isAI ? conf + '%' : humanPct + '%';
+            document.getElementById('audio-human-score').textContent = isAI ? humanPct + '%' : conf + '%';
+
+            resultEl.classList.remove('hidden');
+
+        } catch (e) {
+            alert('Ошибка: ' + e.message);
+        } finally {
+            loaderEl.style.display = 'none';
+        }
     }
 
-    loaderEl.style.display = 'block';
-    resultEl.classList.add('hidden');
+    async function checkMedia() {
+        const file = document.getElementById('mediaFile').files[0];
+        const resultEl = document.getElementById('media-result');
+        const loaderEl = document.getElementById('media-loader');
 
-    const formData = new FormData();
-    formData.append('file', file);
+        if (!file) { alert('Выбери изображение!'); return; }
 
-    try {
-        const res = await fetch("{% url 'detect_audio_api' %}", {
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCookie('csrftoken') },
-            body: formData
-        });
+        loaderEl.style.display = 'block';
+        resultEl.classList.add('hidden');
 
-        const data = await res.json();
-        const isAI = data.label === 'ai_generated';
-        const conf = Math.round(data.confidence * 100);
-        const humanPct = 100 - conf;
+        const formData = new FormData();
+        formData.append('file', file);
 
-        document.getElementById('audio-result-title').textContent = isAI
-            ? 'Аудио сгенерировано ИИ'
-            : 'Живой голос человека';
+        try {
+            const res = await fetch("{% url 'detect_media_api' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: formData
+            });
 
-        const badge = document.getElementById('audio-result-badge');
-        badge.textContent = isAI ? 'AI' : 'Human';
-        badge.className = 'result-badge ' + (isAI ? 'badge-ai' : 'badge-human');
+            const data = await res.json();
+            const isAI = data.label === 'ai_generated';
 
-        document.getElementById('audio-confidence-percent').textContent = conf + '%';
-        const fill = document.getElementById('audio-confidence-fill');
-        fill.style.width = '0%';
-        setTimeout(() => { fill.style.width = conf + '%'; }, 50);
+            document.getElementById('media-result-title').textContent = isAI
+                ? 'Изображение сгенерировано ИИ'
+                : 'Настоящее фото';
 
-        document.getElementById('audio-ai-score').textContent = isAI ? conf + '%' : humanPct + '%';
-        document.getElementById('audio-human-score').textContent = isAI ? humanPct + '%' : conf + '%';
+            const badge = document.getElementById('media-result-badge');
+            badge.textContent = isAI ? 'AI' : 'Human';
+            badge.className = 'result-badge ' + (isAI ? 'badge-ai' : 'badge-human');
 
-        resultEl.classList.remove('hidden');
+            document.getElementById('media-confidence-percent').textContent = data.ai_score + '%';
+            const fill = document.getElementById('media-confidence-fill');
+            fill.style.width = '0%';
+            setTimeout(() => { fill.style.width = data.ai_score + '%'; }, 50);
 
-    } catch (e) {
-        alert('Ошибка: ' + e.message);
-    } finally {
-        loaderEl.style.display = 'none';
+            document.getElementById('media-ai-score').textContent = data.ai_score + '%';
+            document.getElementById('media-human-score').textContent = data.human_score + '%';
+
+            resultEl.classList.remove('hidden');
+
+        } catch (e) {
+            alert('Ошибка: ' + e.message);
+        } finally {
+            loaderEl.style.display = 'none';
+        }
     }
-}
-async function checkMedia() {
-    const file = document.getElementById('mediaFile').files[0];
-    const resultEl = document.getElementById('media-result');
-    const loaderEl = document.getElementById('media-loader');
-
-    if (!file) { alert('Выбери изображение!'); return; }
-
-    loaderEl.style.display = 'block';
-    resultEl.classList.add('hidden');
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-        const res = await fetch("{% url 'detect_media_api' %}", {
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCookie('csrftoken') },
-            body: formData
-        });
-
-        const data = await res.json();
-        const isAI = data.label === 'ai_generated';
-
-        document.getElementById('media-result-title').textContent = isAI
-            ? 'Изображение сгенерировано ИИ'
-            : 'Настоящее фото';
-
-        const badge = document.getElementById('media-result-badge');
-        badge.textContent = isAI ? 'AI' : 'Human';
-        badge.className = 'result-badge ' + (isAI ? 'badge-ai' : 'badge-human');
-
-        document.getElementById('media-confidence-percent').textContent = data.ai_score + '%';
-        const fill = document.getElementById('media-confidence-fill');
-        fill.style.width = '0%';
-        setTimeout(() => { fill.style.width = data.ai_score + '%'; }, 50);
-
-        document.getElementById('media-ai-score').textContent = data.ai_score + '%';
-        document.getElementById('media-human-score').textContent = data.human_score + '%';
-
-        resultEl.classList.remove('hidden');
-
-    } catch (e) {
-        alert('Ошибка: ' + e.message);
-    } finally {
-        loaderEl.style.display = 'none';
-    }
-}
 </script>
 
 {% endblock content %}

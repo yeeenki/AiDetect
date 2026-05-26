@@ -173,11 +173,9 @@ image_detector = hf_pipeline(
 def detect_media_api(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Только POST'}, status=405)
-
     image_file = request.FILES.get('file')
     if not image_file:
         return JsonResponse({'error': 'Файл не загружен'}, status=400)
-
     try:
         image = Image.open(io.BytesIO(image_file.read())).convert('RGB')
         results = image_detector(image)
@@ -186,8 +184,6 @@ def detect_media_api(request):
         human_score = next((r['score'] for r in results if r['label'] == 'human'), 0)
         label = 'ai_generated' if ai_score > 0.5 else 'natural'
         confidence = round(ai_score if label == 'ai_generated' else human_score, 4)
-
-        # Сохраняем ПЕРЕД return
         if request.user.is_authenticated:
             MediaDetectionResult.objects.create(
                 user=request.user,
@@ -196,7 +192,6 @@ def detect_media_api(request):
                 label=label,
                 confidence=confidence
             )
-
         return JsonResponse({
             'label': label,
             'confidence': confidence,

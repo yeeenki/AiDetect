@@ -77,38 +77,20 @@ class AudioDetector:
     # ------------------------------------------------------------------
 
     def predict(self, audio_path: str | Path) -> dict:
-        """
-        Predict whether an audio file is natural or AI-generated.
-
-        Returns
-        -------
-        dict with keys:
-            file        – resolved file path
-            label       – "natural" | "ai_generated"
-            confidence  – float 0-1 (probability of predicted class)
-            probabilities – {"natural": float, "ai_generated": float}
-            features_used – number of features extracted
-            inference_ms  – wall-clock inference time
-        """
         audio_path = Path(audio_path).resolve()
         if not audio_path.exists():
             raise FileNotFoundError(f"Audio file not found: '{audio_path}'")
-
         t0 = time.perf_counter()
-
         # 1. Extract features
         features = _extract(audio_path)
-
         # 2. Optionally scale
         if self.scaler is not None:
             features = self.scaler.transform(features.reshape(1, -1))
         else:
             features = features.reshape(1, -1)
-
         # 3. Predict
         pred_idx = int(self.model.predict(features)[0])
         label = self.LABEL_MAP.get(pred_idx, str(pred_idx))
-
         # 4. Probabilities (not all sklearn estimators expose predict_proba)
         if hasattr(self.model, "predict_proba"):
             proba = self.model.predict_proba(features)[0]
@@ -120,9 +102,7 @@ class AudioDetector:
         else:
             probs = {label: 1.0}
             confidence = 1.0
-
         elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
-
         return {
             "file": str(audio_path),
             "label": label,
